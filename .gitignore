@@ -107,5 +107,11 @@ dmypy.json
 *.prof
 *.lprof
 
+# External datasets (large, users should download themselves)
+MS-SNSD/
+MS-SNSD-NOISE/
+1297-Hours-Scene-Noise-Data-by-Voice-Recorder/
+esc-50/
+
 # Claude
 .claude/

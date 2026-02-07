@@ -39,7 +39,7 @@ INCLUDE_DELTAS = True    # Include Delta and Delta-Delta features
 # ============================================================================
 MODEL_PATH = "../models/best_model.pth"  # Path to trained model weights
 DEVICE = "cpu"           # Device for inference: "cpu" or "cuda"
-THRESHOLD = 0.8          # Detection threshold (probability > 0.8 = sneeze)
+THRESHOLD = 0.95          # Detection threshold (probability > 0.8 = sneeze)
 
 # Model input shape
 MODEL_INPUT_HEIGHT = 60  # MFCC features (20 + 20 deltas + 20 delta-deltas)

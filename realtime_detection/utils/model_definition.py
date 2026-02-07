@@ -36,8 +36,9 @@ class LightweightSneezeCNN(nn.Module):
         super(LightweightSneezeCNN, self).__init__()
 
         # Depthwise Separable Conv Block 1
-        self.conv1_dw = nn.Conv2d(1, 1, kernel_size=3, padding=1, groups=1)
-        self.conv1_pw = nn.Conv2d(1, 32, kernel_size=1)
+        # NOTE: match training checkpoint: depthwise produces 3 channels before pointwise
+        self.conv1_dw = nn.Conv2d(1, 3, kernel_size=3, padding=1, groups=1)
+        self.conv1_pw = nn.Conv2d(3, 32, kernel_size=1)
         self.bn1 = nn.BatchNorm2d(32)
         self.pool1 = nn.MaxPool2d(kernel_size=2)
 
@@ -56,9 +57,11 @@ class LightweightSneezeCNN(nn.Module):
         # Global Average Pooling
         self.gap = nn.AdaptiveAvgPool2d(1)
 
-        # Fully Connected Layers
+        # Fully Connected Layers - match checkpoint (fc0 present)
+        self.fc0 = nn.Linear(128, 128)
+        self.dropout1 = nn.Dropout(0.3)
         self.fc1 = nn.Linear(128, 64)
-        self.dropout = nn.Dropout(0.3)
+        self.dropout2 = nn.Dropout(0.3)
         self.fc2 = nn.Linear(64, num_classes)
 
     def forward(self, x):
@@ -96,10 +99,11 @@ class LightweightSneezeCNN(nn.Module):
         x = self.gap(x)
         x = x.view(x.size(0), -1)  # Flatten
 
-        # FC layers
-        x = self.fc1(x)
-        x = F.relu(x)
-        x = self.dropout(x)
+        # FC layers (match checkpoint ordering)
+        x = F.relu(self.fc0(x))
+        x = self.dropout1(x)
+        x = F.relu(self.fc1(x))
+        x = self.dropout2(x)
         x = self.fc2(x)
 
         return x
